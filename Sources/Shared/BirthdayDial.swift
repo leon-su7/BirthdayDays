@@ -38,7 +38,7 @@ struct BirthdayDial: View {
                         .foregroundStyle(BirthdayDesignEnum.text)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    Text(caption)
+                    Text(LocalizedStringKey(caption))
                         .font(.system(size: compact ? 9 : 11, weight: .medium))
                         .foregroundStyle(BirthdayDesignEnum.secondary)
                 }
@@ -47,7 +47,8 @@ struct BirthdayDial: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(value)\(caption)，本年度已走过百分之\(Int(progress * 100))")
+        .accessibilityLabel(BirthdayLocalizationEnum.format("年度刻度说明", value,
+            BirthdayLocalizationEnum.text(caption), String(Int(progress * 100))))
     }
 }
 

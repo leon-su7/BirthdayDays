@@ -23,6 +23,7 @@ targets:
     sources:
       - path: Sources/App
       - path: Sources/Shared
+      - path: Resources
     entitlements:
       path: Support/BirthdayDays.entitlements
       properties:
@@ -58,6 +59,7 @@ targets:
     sources:
       - path: Sources/Widget
       - path: Sources/Shared
+      - path: Resources
     entitlements:
       path: Support/BirthdayDaysWidget.entitlements
       properties:

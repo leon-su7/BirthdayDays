@@ -145,20 +145,14 @@ struct BirthdayRootView: View {
                     .lineLimit(1).minimumScaleFactor(0.5)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.numericText())
-                    .accessibilityLabel(metrics.map { "已经诞生\(String($0.daysAlive))天" } ?? "尚未记录生日")
-                Text("天").font(.system(size: 23)).foregroundStyle(BirthdayDesignEnum.accent)
+                    .accessibilityLabel(metrics.map { BirthdayLocalizationEnum.format("已经诞生%@", BirthdayLocalizationEnum.days($0.daysAlive)) } ?? BirthdayLocalizationEnum.text("尚未记录生日"))
+                Text(BirthdayLocalizationEnum.dayUnit(metrics?.daysAlive)).font(.system(size: 23)).foregroundStyle(BirthdayDesignEnum.accent)
                     .fixedSize().layoutPriority(2)
             }
             .padding(.top, 16).padding(.bottom, 19)
             .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: metrics?.daysAlive)
             if let metrics {
-                HStack(alignment: .firstTextBaseline, spacing: 0) {
-                    Text("走过 ")
-                    Text(String(metrics.age)).foregroundStyle(BirthdayDesignEnum.text)
-                    Text(" 年 ")
-                    Text(String(metrics.daysSinceBirthday)).foregroundStyle(BirthdayDesignEnum.text)
-                    Text(" 天")
-                }
+                Text(BirthdayLocalizationEnum.duration(years: metrics.age, days: metrics.daysSinceBirthday))
                 .font(.system(size: 14)).foregroundStyle(BirthdayDesignEnum.secondary)
                 Text("从 \(BirthdayDesignEnum.dateLabel(metrics.birthday)) 开始的故事")
                     .font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.muted).padding(.top, 12)
@@ -187,13 +181,13 @@ struct BirthdayRootView: View {
                     .font(.system(size: 38, weight: .light, design: .rounded)).monospacedDigit()
                     .foregroundStyle(BirthdayDesignEnum.accent)
                     .contentTransition(.numericText())
-                Text("天").font(.system(size: 12)).foregroundStyle(BirthdayDesignEnum.secondary)
+                Text(BirthdayLocalizationEnum.dayUnit(metrics?.daysRemaining)).font(.system(size: 12)).foregroundStyle(BirthdayDesignEnum.secondary)
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(metrics.map { "按预计\(String(plan.expectedLifespanYears))岁，结束倒计时剩余\(String($0.daysRemaining))天" } ?? "保存生日后开始结束倒计时")
+            .accessibilityLabel(metrics.map { BirthdayLocalizationEnum.format("预计%@岁，剩余%@", String(plan.expectedLifespanYears), BirthdayLocalizationEnum.days($0.daysRemaining)) } ?? BirthdayLocalizationEnum.text("保存生日后开始结束倒计时"))
             Text(metrics.map {
-                referenceDate >= $0.expectedEndDate ? "已到设定日期 · \(BirthdayDesignEnum.dateLabel($0.expectedEndDate))" : "设定日期 · \(BirthdayDesignEnum.dateLabel($0.expectedEndDate))"
-            } ?? "记录生日后，计算剩余天数")
+                referenceDate >= $0.expectedEndDate ? String(localized: "已到设定日期 · \(BirthdayDesignEnum.dateLabel($0.expectedEndDate))") : String(localized: "设定日期 · \(BirthdayDesignEnum.dateLabel($0.expectedEndDate))")
+            } ?? BirthdayLocalizationEnum.text("记录生日后，计算剩余天数"))
                 .font(.system(size: 10)).foregroundStyle(BirthdayDesignEnum.muted)
         }
         .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: metrics?.daysRemaining)
@@ -220,7 +214,7 @@ struct BirthdayRootView: View {
                 hasEditedDate = true
             }), in: Date.distantPast...referenceDate, displayedComponents: [.date])
                 .datePickerStyle(.field).labelsHidden().controlSize(.large)
-                .environment(\.locale, Locale(identifier: "zh_CN"))
+                .environment(\.locale, BirthdayLocalizationEnum.locale)
                 .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
                 .padding(.horizontal, 12)
                 .background(BirthdayDesignEnum.background.opacity(0.75), in: RoundedRectangle(cornerRadius: 9))
@@ -232,7 +226,7 @@ struct BirthdayRootView: View {
                 if !saveFailed { hasEditedDate = false }
             } label: {
                 HStack(spacing: 8) {
-                    Text(hasUnsavedChanges ? "保存设置" : "设置已保存")
+                    Text(LocalizedStringKey(hasUnsavedChanges ? "保存设置" : "设置已保存"))
                     Spacer()
                     LucideIcon(icon: hasUnsavedChanges ? .arrowUpRight : .check, size: 16)
                 }
@@ -244,7 +238,7 @@ struct BirthdayRootView: View {
                     .font(.system(size: 10)).foregroundStyle(BirthdayDesignEnum.secondary).padding(.top, 10)
             }
             HStack {
-                Text(hasUnsavedChanges ? "保存后同步到小组件" : "预计寿命可随时调整")
+                Text(LocalizedStringKey(hasUnsavedChanges ? "保存后同步到小组件" : "预计寿命可随时调整"))
                     .font(.system(size: 10)).foregroundStyle(BirthdayDesignEnum.muted)
                 Spacer(minLength: 4)
                 if store.birthday != nil {
@@ -278,7 +272,7 @@ struct BirthdayRootView: View {
                     .font(.system(size: 17, weight: .medium, design: .rounded)).monospacedDigit()
                     .multilineTextAlignment(.trailing).frame(width: 42)
                     .accessibilityLabel("预计寿命，填写 1 至 150 岁")
-                Text("岁").font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.secondary)
+                Text(BirthdayLocalizationEnum.text(selectedLifePlan?.expectedLifespanYears == 1 ? "年（单数）" : "岁")).font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.secondary)
                 Stepper("调整预计寿命", value: Binding(
                     get: { selectedLifePlan?.expectedLifespanYears ?? store.lifePlan.expectedLifespanYears },
                     set: { expectedLifespanInput = String($0) }
@@ -306,9 +300,9 @@ struct BirthdayRootView: View {
             BirthdayDial(progress: metrics?.yearProgress ?? 0, value: metrics.map { String($0.age) } ?? "—", caption: metrics == nil ? "岁月待启" : "周岁")
                 .frame(width: 124, height: 124)
             VStack(alignment: .leading, spacing: 12) {
-                Text(metrics == nil ? "你的时间，正待展开。" : metrics?.isBirthday == true ? "今天，是你的生日。" : "这一岁，正在继续。")
+                Text(LocalizedStringKey(metrics == nil ? "你的时间，正待展开。" : metrics?.isBirthday == true ? "今天，是你的生日。" : "这一岁，正在继续。"))
                     .font(.system(size: 18, weight: .medium)).foregroundStyle(BirthdayDesignEnum.text)
-                Text(metrics.map { "本年度已走过 \(String($0.daysSinceBirthday)) 天" } ?? "从生日出发，走过属于你的一圈。")
+                Text(metrics.map { BirthdayLocalizationEnum.format("本年度已走过%@", BirthdayLocalizationEnum.days($0.daysSinceBirthday)) } ?? BirthdayLocalizationEnum.text("从生日出发，走过属于你的一圈。"))
                     .font(.system(size: 12)).foregroundStyle(BirthdayDesignEnum.secondary)
                 HStack(spacing: 6) {
                     Circle().fill(BirthdayDesignEnum.accent).frame(width: 4, height: 4)
@@ -318,15 +312,15 @@ struct BirthdayRootView: View {
             Spacer(minLength: 8)
             Rectangle().fill(BirthdayDesignEnum.line).frame(width: 1, height: 80)
             VStack(alignment: .leading, spacing: 8) {
-                Text(metrics?.isBirthday == true ? "生日快乐" : "距离下次生日")
+                Text(LocalizedStringKey(metrics?.isBirthday == true ? "生日快乐" : "距离下次生日"))
                     .font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.secondary)
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(metrics.map { String($0.daysUntilBirthday) } ?? "—")
                         .font(.system(size: 36, weight: .light, design: .rounded)).monospacedDigit()
                         .foregroundStyle(BirthdayDesignEnum.accent)
-                    Text("天").font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.secondary)
+                    Text(BirthdayLocalizationEnum.dayUnit(metrics?.daysUntilBirthday)).font(.system(size: 11)).foregroundStyle(BirthdayDesignEnum.secondary)
                 }
-                Text(metrics.map { "\(BirthdayDesignEnum.monthDay($0.nextBirthday)) · \(String($0.nextAge)) 岁" } ?? "等待你的时间起点")
+                Text(metrics.map { String(localized: "\(BirthdayDesignEnum.monthDay($0.nextBirthday)) · \(String($0.nextAge)) 岁") } ?? BirthdayLocalizationEnum.text("等待你的时间起点"))
                     .font(.system(size: 10)).foregroundStyle(BirthdayDesignEnum.muted)
             }
             .frame(minWidth: 114, alignment: .leading)
@@ -345,7 +339,7 @@ struct BirthdayRootView: View {
             HStack(spacing: 6) {
                 Circle().fill(store.isSharedStorageAvailable ? BirthdayDesignEnum.accent : BirthdayDesignEnum.secondary)
                     .frame(width: 4, height: 4)
-                Text(!store.isSharedStorageAvailable ? "小组件同步暂不可用" : store.birthday == nil ? "保存后自动同步小组件" : "小组件自动同步")
+                Text(LocalizedStringKey(!store.isSharedStorageAvailable ? "小组件同步暂不可用" : store.birthday == nil ? "保存后自动同步小组件" : "小组件自动同步"))
                     .font(.system(size: 10)).foregroundStyle(BirthdayDesignEnum.secondary)
             }
         }

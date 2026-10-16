@@ -10,13 +10,13 @@ enum BirthdayDesignEnum {
     static let muted = Color(red: 0.39, green: 0.46, blue: 0.44)
     static let line = Color.white.opacity(0.085)
 
-    /// 以中文展示日期，让系统区域设置不会改变界面语言。
+    /// 日期语言跟随当前应用选中的本地化，支持 macOS 的单独应用语言设置。
     static func dateLabel(_ date: Date) -> String {
-        date.formatted(.dateTime.locale(Locale(identifier: "zh_CN")).year().month(.twoDigits).day(.twoDigits))
+        date.formatted(.dateTime.locale(BirthdayLocalizationEnum.locale).year().month(.twoDigits).day(.twoDigits))
     }
 
     /// 简短月日，用于年度周期与小组件中的日期标记。
     static func monthDay(_ date: Date) -> String {
-        date.formatted(.dateTime.locale(Locale(identifier: "zh_CN")).month(.twoDigits).day(.twoDigits))
+        date.formatted(.dateTime.locale(BirthdayLocalizationEnum.locale).month(.twoDigits).day(.twoDigits))
     }
 }
