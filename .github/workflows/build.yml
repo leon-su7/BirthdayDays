@@ -1,4 +1,4 @@
-name: macOS 构建与打包
+name: macOS Build and Release
 
 on:
   push:
@@ -16,11 +16,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: 安装 XcodeGen
+      - name: Install XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
-      - name: 构建通用 DMG
+      - name: Build universal DMG
         run: ./Scripts/package-dmg.sh
-      - name: 保存安装包与校验文件
+      - name: Upload DMG and checksum
         uses: actions/upload-artifact@v4
         with:
           name: BirthdayDays-macOS
@@ -39,12 +39,12 @@ jobs:
         with:
           name: BirthdayDays-macOS
           path: dist
-      - name: 发布版本和安装包
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: >-
           gh release create "$RELEASE_TAG" dist/* --verify-tag
           --repo "$GITHUB_REPOSITORY"
-          --title "诞生记录 $RELEASE_TAG · 中英文通用版"
+          --title "Birth Record $RELEASE_TAG"
           --notes-file .github/RELEASE_NOTES.md
