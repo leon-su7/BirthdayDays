@@ -1,0 +1,25 @@
+# 构建产物和 XcodeGen 生成的工程
+.build/
+dist/
+DerivedData/
+*.xcodeproj/
+*.xcworkspace/
+*.xcarchive/
+*.dSYM/
+# 本机配置、证书与凭据
+*.local.xcconfig
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+*.cer
+*.key
+*.pem
+# 系统及编辑器文件
+.DS_Store
+.idea/
+.vscode/
+*.xcuserstate

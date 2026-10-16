@@ -1,0 +1,89 @@
+name: BirthdayDays
+options:
+  bundleIdPrefix: local.birthday
+  createIntermediateGroups: true
+  developmentLanguage: zh-Hans
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: ""
+    DEVELOPMENT_TEAM: ""
+    CURRENT_PROJECT_VERSION: "2"
+    CODE_SIGNING_ALLOWED: "NO"
+    CODE_SIGNING_REQUIRED: "NO"
+    ENABLE_DEBUG_DYLIB: "NO"
+    ENABLE_USER_SCRIPT_SANDBOXING: "YES"
+targets:
+  BirthdayDays:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/App
+      - path: Sources/Shared
+    entitlements:
+      path: Support/BirthdayDays.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - "$(DEVELOPMENT_TEAM).group.local.birthday.shared"
+    info:
+      path: Support/BirthdayDays-Info.plist
+      properties:
+        CFBundleDisplayName: 诞生记录
+        CFBundleName: 诞生记录
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        NSPrincipalClass: NSApplication
+        AppGroupIdentifier: "$(DEVELOPMENT_TEAM).group.local.birthday.shared"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.birthday.app
+        PRODUCT_NAME: 诞生记录
+        EXECUTABLE_NAME: BirthdayDays
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.lifestyle
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 leon-su7. MIT License."
+    dependencies:
+      - target: BirthdayDaysWidget
+        embed: true
+        codeSign: true
+
+  BirthdayDaysWidget:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources/Widget
+      - path: Sources/Shared
+    entitlements:
+      path: Support/BirthdayDaysWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - "$(DEVELOPMENT_TEAM).group.local.birthday.shared"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.birthday.app.widget
+        SKIP_INSTALL: "YES"
+    info:
+      path: Support/BirthdayDaysWidget-Info.plist
+      properties:
+        CFBundleDisplayName: 诞生记录
+        CFBundleName: 诞生记录
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        AppGroupIdentifier: "$(DEVELOPMENT_TEAM).group.local.birthday.shared"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+schemes:
+  BirthdayDays:
+    build:
+      targets:
+        BirthdayDays: all
+        BirthdayDaysWidget: all
+    run:
+      config: Debug

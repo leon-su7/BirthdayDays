@@ -1,0 +1,27 @@
+name: macOS 构建与打包
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 XcodeGen
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: 构建通用 DMG
+        run: ./Scripts/package-dmg.sh
+      - name: 保存安装包与校验文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: BirthdayDays-macOS
+          path: dist/BirthdayDays-*
+          if-no-files-found: error
