@@ -3,6 +3,7 @@ name: macOS 构建与打包
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
 
@@ -25,3 +26,25 @@ jobs:
           name: BirthdayDays-macOS
           path: dist/BirthdayDays-*
           if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: BirthdayDays-macOS
+          path: dist
+      - name: 发布版本和安装包
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: >-
+          gh release create "$RELEASE_TAG" dist/* --verify-tag
+          --repo "$GITHUB_REPOSITORY"
+          --title "诞生记录 $RELEASE_TAG · 中英文通用版"
+          --notes-file .github/RELEASE_NOTES.md
