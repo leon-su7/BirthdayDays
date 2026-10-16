@@ -64,8 +64,13 @@ private struct BirthdayTickShape: Shape {
         for index in 0..<60 where Double(index) / 60 < progress {
             let angle = Double(index) / 60 * .pi * 2 - .pi / 2
             let length = radius * (index.isMultiple(of: 5) ? 0.16 : 0.085)
-            path.move(to: CGPoint(x: center.x + cos(angle) * (radius - length), y: center.y + sin(angle) * (radius - length)))
-            path.addLine(to: CGPoint(x: center.x + cos(angle) * radius, y: center.y + sin(angle) * radius))
+            // 显式区分三角函数的 Double 与绘图坐标的 CGFloat，兼容 Xcode 16 的重载推断。
+            let cosine: Double = cos(angle)
+            let sine: Double = sin(angle)
+            path.move(to: CGPoint(x: center.x + CGFloat(cosine) * (radius - length),
+                                 y: center.y + CGFloat(sine) * (radius - length)))
+            path.addLine(to: CGPoint(x: center.x + CGFloat(cosine) * radius,
+                                    y: center.y + CGFloat(sine) * radius))
         }
         return path
     }
