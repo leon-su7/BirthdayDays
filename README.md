@@ -8,6 +8,20 @@ Every day counts.
 
 A native macOS birthday tracker built with SwiftUI and WidgetKit. A quiet dark green interface shows your days alive, age, birthday progress, and the days until your next birthday.
 
+## Screenshots
+
+### App
+
+![Birth Record in English, showing days alive, birthday progress, and the optional life countdown](docs/screenshots/app-en.png)
+
+Current app views rendered with sample data and the optional life countdown enabled. For Chinese screenshots, see the [Simplified Chinese README](README.zh-CN.md#界面截图).
+
+### Widget previews
+
+![Small, medium, and large Birth Record widget previews in English](docs/screenshots/widgets-en.png)
+
+Previews of the three widget sizes using sample data. Widget availability and synchronization depend on signing permissions; see [Widgets and shared storage](#widgets-and-shared-storage).
+
 ## Features
 
 - Days alive counted by calendar day, with your birthday counted as day zero.
